@@ -1,7 +1,7 @@
 #include <iostream>
 using namespace std;
 
-int main() {
+// int main() {
 
     // cout << "Hello, World! ";
     // cout << "Belajar C++ sangat seru😀";
@@ -127,5 +127,5 @@ int main() {
     // cout << x << endl;
     // }
 
-    return 0;
-}
+//     return 0;
+// }
