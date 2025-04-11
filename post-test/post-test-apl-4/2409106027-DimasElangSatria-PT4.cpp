@@ -14,6 +14,8 @@ struct DataProgram {
     int totalWorkshops = 0;
 };
 
+User user;
+int percobaan = 3;
 
 // Fungsi menampilkan jumlah workshop
 int jumlahWorkshop(DataProgram data) {
@@ -25,8 +27,6 @@ int jumlahWorkshop(int total) {
     cout << "Jumlah workshop direncanakan : " << total << endl;
     return total;
 }
-
-
 
 // Fungsi rekursif untuk mencari judul terpanjang
 string cariJudulTerpanjang(DataProgram &data, int indeks, string terpanjang) {
@@ -52,7 +52,6 @@ void tampilkanWorkshop(DataProgram &data) {
     }
 }
 
-// Prosedur untuk menambah workshop
 void tambahWorkshop(DataProgram &data) {
     int i = data.totalWorkshops;
     cout << "Masukkan nama workshop: ";
@@ -67,11 +66,10 @@ void tambahWorkshop(DataProgram &data) {
     cout << "Workshop baru berhasil ditambahkan!" << endl;
 }
 
-// Prosedur untuk update workshop
 void updateWorkshop(DataProgram &data) {
     if (data.totalWorkshops == 0) {
         cout << "Workshop tidak ditemukan." << endl;
-        return; // kembali ke menu
+        return;
     }
     tampilkanWorkshop(data);
     int pilih;
@@ -93,11 +91,10 @@ void updateWorkshop(DataProgram &data) {
     }
 }
 
-// Prosedur untuk hapus workshop
 void hapusWorkshop(DataProgram &data) {
     if (data.totalWorkshops == 0) {
         cout << "Workshop tidak ditemukan." << endl;
-        return; // kembali ke menu
+        return;
     }
     tampilkanWorkshop(data);
     int input;
@@ -114,12 +111,95 @@ void hapusWorkshop(DataProgram &data) {
     }
 }
 
+void menuAdmin(DataProgram &dataprogram) {
+    int pilihan, total;
+    do {
+        cout << "\n|| ===== MENU ADMIN ===== ||\n";
+        cout << "1. Tambah Workshop\n2. Lihat Workshop Tersedia\n3. Update Workshop\n4. Hapus Workshop\n5. Lihat Jumlah Workshop\n6. Lihat Judul Terpanjang\n7. Rencana Jumlah Workshop\n8. Logout\nMasukkan Pilihan: ";
+        cin >> pilihan;
+        cin.ignore();
+
+        switch (pilihan) {
+            case 1: tambahWorkshop(dataprogram); break;
+            case 2: tampilkanWorkshop(dataprogram); break;
+            case 3: updateWorkshop(dataprogram); break;
+            case 4: hapusWorkshop(dataprogram); break;
+            case 5: cout << "Jumlah workshop saat ini: " << jumlahWorkshop(dataprogram) << endl; break;
+            case 6: cout << "Judul terpanjang: " << cariJudulTerpanjang(dataprogram, 0, "") << endl; break;
+            case 7:
+                cout << "Masukkan total workshop direncanakan (int): ";
+                cin >> total;
+                jumlahWorkshop(total);
+                if (jumlahWorkshop(dataprogram) < total)
+                    cout << "Jumlah Workshop Saat Ini Belum Memenuhi Rencana, Silahkan Tambahkan Workshop" << endl;
+                else
+                    cout << "Jumlah Workshop Saat Ini Memenuhi Rencana" << endl;
+                break;
+        }
+    } while (pilihan != 8);
+}
+
+void menuPengguna(DataProgram &dataprogram) {
+    int pilihan;
+    do {
+        cout << "\n|| ===== MENU PENDAFTAR ===== ||\n";
+        cout << "1. Lihat Workshop Tersedia\n2. Logout\nPilih: ";
+        cin >> pilihan;
+        cin.ignore();
+
+        if (pilihan == 1) {
+            tampilkanWorkshop(dataprogram);
+            int pilihanWorkshop;
+            cout << "Pilih nomor workshop untuk melihat link grup: ";
+            cin >> pilihanWorkshop;
+            cin.ignore();
+            if (pilihanWorkshop > 0 && pilihanWorkshop <= dataprogram.totalWorkshops) {
+                cout << "Link grup untuk " << dataprogram.workshop[pilihanWorkshop - 1].judulworkshop
+                    << " adalah: " << dataprogram.workshop[pilihanWorkshop - 1].linkgrup << endl;
+                cout << "Silakan join grup untuk mendapat info seputar Workshop." << endl;
+            } else {
+                cout << "Nomor workshop tidak valid." << endl;
+            }
+        }
+    } while (pilihan != 2);
+}
+
+void registerUser() {
+    cout << "\n|| ===== REGISTER ===== ||\n";
+    cout << "Masukkan username baru : ";
+    getline(cin, user.username);
+    cout << "Masukkan Password baru : ";
+    getline(cin, user.password);
+}
+
+bool login(DataProgram &dataprogram) {
+    string inputusn, inputpw;
+    cout << "\n|| ===== LOGIN ===== ||\n";
+    cout << "Masukkan username : ";
+    getline(cin, inputusn);
+    cout << "Masukkan Password : ";
+    getline(cin, inputpw);
+
+    if (inputusn == "dimas" && inputpw == "027") {
+        menuAdmin(dataprogram);
+        return true;
+    } else if (inputusn == user.username && inputpw == user.password) {
+        menuPengguna(dataprogram);
+        return true;
+    } else {
+        percobaan--;
+        cout << "Login gagal! Sisa percobaan: " << percobaan << endl;
+        if (percobaan == 0) {
+            cout << "Anda telah gagal login 3 kali. Program dihentikan." << endl;
+            exit(0);
+        }
+        return false;
+    }
+}
+
 int main() {
     DataProgram dataprogram;
-    User user;
     int pilihan;
-    int percobaan = 3;
-    int total;
 
     while (true) {
         cout << "\n|| ===== MENU AWAL ===== ||\n";
@@ -127,85 +207,14 @@ int main() {
         cin >> pilihan;
         cin.ignore();
 
-        if (pilihan == 1) {
-            cout << "\n|| ===== REGISTER ===== ||\n";
-            cout << "Masukkan username baru : ";
-            getline(cin, user.username);
-            cout << "Masukkan Password baru : ";
-            getline(cin, user.password);
-        } else if (pilihan == 2) {
-            string inputusn, inputpw;
-            cout << "\n|| ===== LOGIN ===== ||\n";
-            cout << "Masukkan username : ";
-            getline(cin, inputusn);
-            cout << "Masukkan Password : ";
-            getline(cin, inputpw);
-
-            if (inputusn == "dimas" && inputpw == "027") {
-                do {
-                    cout << "\n|| ===== MENU ADMIN ===== ||\n";
-                    cout << "1. Tambah Workshop\n2. Lihat Workshop Tersedia\n3. Update Workshop\n4. Hapus Workshop\n5. Lihat Jumlah Workshop\n6. Lihat Judul Terpanjang\n7.Rencana Jumlah Workshop\n8. Logout\nMasukkan Pilihan: ";
-                    cin >> pilihan;
-                    cin.ignore();
-
-                    if (pilihan == 1) tambahWorkshop(dataprogram);
-                    else if (pilihan == 2) tampilkanWorkshop(dataprogram);
-                    else if (pilihan == 3) updateWorkshop(dataprogram);
-                    else if (pilihan == 4) hapusWorkshop(dataprogram);
-                    else if (pilihan == 5) cout << "Jumlah workshop saat ini: " << jumlahWorkshop(dataprogram) << endl;
-                    else if (pilihan == 6) cout << "Judul terpanjang: " << cariJudulTerpanjang(dataprogram, 0, "") << endl;
-                    else if (pilihan == 7) {
-                        cout << "Masukkan total workshop direncanakan (int): ";
-                        cin >> total;
-                        jumlahWorkshop(total);
-
-                        if (jumlahWorkshop(dataprogram)< total) {
-                            cout << "Jumlah Workshop Saat Ini Belum Memenuhi Rencana, Silahkan Tambahkan Workshop"<< endl;;
-                        }
-                        else if (jumlahWorkshop(dataprogram) >= total){
-                            cout << "Jumlah Workshop Saat Ini Memenuhi Rencana"<< endl;;
-                        }
-
-                    }
-        
-                } while (pilihan != 7);
-                
-            } else if (inputusn == user.username && inputpw == user.password) {
-                do {
-                    cout << "\n|| ===== MENU PENDAFTAR ===== ||\n";
-                    cout << "1. Lihat Workshop Tersedia\n2. Logout\nPilih: ";
-                    cin >> pilihan;
-                    cin.ignore();
-
-                    if (pilihan == 1) {
-                        tampilkanWorkshop(dataprogram);
-                        int pilihanWorkshop;
-                        cout << "Pilih nomor workshop untuk melihat link grup: ";
-                        cin >> pilihanWorkshop;
-                        cin.ignore();
-                        if (pilihanWorkshop > 0 && pilihanWorkshop <= dataprogram.totalWorkshops) {
-                            cout << "Link grup untuk " << dataprogram.workshop[pilihanWorkshop - 1].judulworkshop
-                                << " adalah: " << dataprogram.workshop[pilihanWorkshop - 1].linkgrup << endl;
-                            cout << "Silakan join grup untuk mendapat info seputar Workshop." << endl;
-                        } else {
-                            cout << "Nomor workshop tidak valid." << endl;
-                        }
-                    }
-                } while (pilihan != 2);
-            } else {
-                percobaan--;
-                cout << "Login gagal! Sisa percobaan: " << percobaan << endl;
-                if (percobaan == 0) {
-                    cout << "Anda telah gagal login 3 kali. Program dihentikan." << endl;
-                    exit(0);
-                }
-            }
-        } else if (pilihan == 3) {
-            cout << "Program dihentikan." << endl;
-            exit(0);
-        } else {
-            cout << "Pilihan tidak valid!" << endl;
+        switch (pilihan) {
+            case 1: registerUser(); break;
+            case 2: login(dataprogram); break;
+            case 3:
+                cout << "Program dihentikan." << endl;
+                return 0;
+            default:
+                cout << "Pilihan tidak valid!" << endl;
         }
     }
-    return 0;
 }
